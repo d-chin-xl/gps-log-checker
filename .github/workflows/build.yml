@@ -1,0 +1,18 @@
+name: build-and-test
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure
+        run: cmake -S . -B build
+      - name: Build
+        run: cmake --build build
+      - name: Run tests
+        run: ctest --test-dir build --output-on-failure
+      - name: Run checker on sample log
+        # The sample has bad lines on purpose, so exit code 1 is expected here
+        run: ./build/gps_log_checker data/sample.nmea || true
